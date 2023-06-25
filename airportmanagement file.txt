@@ -1,0 +1,532 @@
+create table airport(
+AIRPORT_NAME varchar(50),
+CITY varchar(15),
+constraint pka primary key(AIRPORT_NAME));
+
+create index indcity_airport_city on airport(city);
+
+
+insert into airport values('RAJIV GANDHI INTL AIRPORT','HYDERABAD');
+insert into airport values('CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT','MUMBAI');
+insert into airport values('INDIRA GANDHI INTL AIRPORT','DELHI');
+insert into airport values('KEMPEGOWDA INTL AIRPORT','BANGALORE');
+insert into airport values('PUNE INTL AIRPORT','PUNE');
+
+
+
+create table state(
+CITY varchar(15),
+STATE varchar(15),
+constraint fks foreign key(CITY) references airport(CITY) on delete cascade,
+constraint pks primary key(CITY));
+
+
+insert into state values('HYDERABAD','TELANGANA');
+insert into state values('MUMBAI','MAHARASHTRA');
+insert into state values('DELHI','DELHI');
+insert into state values('BANGALORE','KARNATAKA');
+insert into state values('PUNE','MAHARASHTRA');
+
+
+create table airline
+(AIRLINE_ID int,
+AIRLINE_NAME varchar(20),
+constraint primary key(AIRLINE_ID));
+
+
+insert into airline values(1,'AIR INDIA');
+insert into airline values(2,'QATAR AIRWAYS');
+insert into airline values(3,'LUFTHANSA');
+insert into airline values(4,'THAI AIRWAYS');
+insert into airline values(5,'SINGAPORE AIRLINES');
+
+
+
+create table contains(
+AIRPORT_NAME varchar(50),
+AIRLINE_ID int,
+constraint fkc1 foreign key(AIRPORT_NAME) references airport(AIRPORT_NAME) on delete set null,
+constraint fkc2 foreign key(AIRLINE_ID) references airline(AIRLINE_ID) on delete cascade);
+
+
+--insert into contains select a.AIRPORT_NAME,b.AIRLINE_ID from airport a,airline b;
+
+insert into contains select a.AIRPORT_NAME,b.AIRLINE_ID from airport a,airline b where
+b.AIRLINE_ID=1;
+
+
+--insert into contains select airport_name,2 from airport where city='MUMBAI';
+similarly i have done for rest values
+
+-------------------------------HOW TO CREATE AND DEFINE PROCEDURES-------------------------
+
+delimiter @@
+create procedure updatestatus1(in mark1 int)
+begin
+declare mymark int;
+set mymark =mark1;
+if mymark>35 then 
+upadate student set status='PASS' where marks=mymark;
+esle
+upadate student set status='FAIL' where marks=mymark;
+end if;
+end;
+@@
+delimiter ;
+
+
+------------------------------------------------------------------------------------------------
+
+
+---------procedure to display name of airline in contains table
+
+create  procedure show_contains()
+begin
+select b.AIRPORT_NAME,a.AIRLINE_NAME from airline a,contains b where b.AIRLINE_ID=a.AIRLINE_ID;
+end;
+
+
+--procedure to display the airport table
+
+delimiter @@
+create procedure show_airport()
+begin
+select a.airport_name,s.state,a.city from airport a,state s where a.city=s.city;
+end;
+@@
+
+delimiter ;
+
+
+------------------------------------------CREATING AND DEFINING TRIGGERS---------------------------------------------
+delimiter &&
+create trigger neworderformedicine
+after update on medicine
+for each row
+begin
+if new.quantity<20 then --new keyword is used to access the colums affected by the trigger--
+insert into neworder values(new.mid,sysdate,new.quantity);
+end if;
+end;
+&&
+delimiter ;
+--------------------------------------------------------------------------------------------------------------------------
+
+create table employee(
+EMP_ID int,
+NAME varchar(15),
+DOB date,
+DESIGNATION varchar(30),
+GENDER varchar(8),
+AIRPORT_NAME varchar(50),
+constraint pke primary key(EMP_ID),
+constraint fke foreign key(AIRPORT_NAME) references airport(AIRPORT_NAME)
+on delete cascade);
+
+
+-- date in sql is YYYY-MM-DD
+
+insert into employee values(1,'Donald','1967-6-1','Operations Agent','Male','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(2,'Douglas','1970-6-4','Flight Dispatcher','Male','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(3,'Jenifer','1999-1-4','Flight Attendant','Female','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(4,'Sagar','1984-11-4','Avionics Technician','Male','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(5,'Rahul','2000-7-4','Regional Sales Manager','Male','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(6,'Raunak','1977-6-01','Flight Dispatcher','Male','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(7,'Lokesh','1997-1-09','Flight Attendant','Male','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(8,'Shivani','1982-12-12','Avionics Technician','Female','KEMPEGOWDA INTL AIRPORT');
+insert into employee values(9,'Chanchal','2000-2-21','Regional Sales Manager','Female','KEMPEGOWDA INTL AIRPORT');
+
+
+insert into employee values(10,'Ashutosh','1964-6-1','Operations Agent','Male','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(11,'Douglas','1974-6-4','Flight Dispatcher','Male','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(12,'Jenifer','1989-1-4','Flight Attendant','Female','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(13,'Sagar','2000-11-4','Avionics Technician','Male','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(14,'Ram','2001-7-4','Regional Sales Manager','Male','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(15,'Prateek','1977-6-01','Flight Dispatcher','Male','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(16,'Lokesh','1992-1-09','Flight Attendant','Male','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(17,'Raj','1984-12-12','Avionics Technician','Male','INDIRA GANDHI INTL AIRPORT');
+insert into employee values(18,'Vikram','2002-2-21','Regional Sales Manager','Male','INDIRA GANDHI INTL AIRPORT');
+
+
+insert into employee values(19,'Ashutosh','1964-6-1','Operations Agent','Male','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(20,'Vikram','1974-6-4','Flight Dispatcher','Male','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(21,'Isha','1989-1-4','Flight Attendant','Female','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(23,'Sagar','2000-11-4','Avionics Technician','Male','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(24,'Ram','2001-7-4','Regional Sales Manager','Male','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(25,'Prateek','1977-6-01','Flight Dispatcher','Male','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(26,'Rakhi','1992-1-09','Flight Attendant','Female','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(27,'Raj','1984-12-12','Avionics Technician','Male','RAJIV GANDHI INTL AIRPORT');
+insert into employee values(28,'Nisha','2002-2-21','Regional Sales Manager','Female','RAJIV GANDHI INTL AIRPORT');
+
+insert into employee values(39,'Pranav','1964-6-1','Operations Agent','Male','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(30,'Atharv','1974-6-4','Flight Dispatcher','Male','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(31,'Bristi','1989-1-4','Flight Attendant','Female','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(33,'Suman','2000-11-4','Avionics Technician','Male','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(34,'Raj','2001-7-4','Regional Sales Manager','Male','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(35,'Prateek','1977-6-01','Flight Dispatcher','Male','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(36,'Afreen','1992-1-09','Flight Attendant','Female','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(37,'Raj','1984-12-12','Avionics Technician','Male','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+insert into employee values(38,'Nisha','2002-2-21','Regional Sales Manager','Female','CHATRAPATI SHIVAJI MAHARAJ INTL AIRPORT');
+
+insert into employee values(49,'Milind','1964-6-1','Operations Agent','Male','PUNE INTL AIRPORT');
+insert into employee values(40,'Tanmay','1974-6-4','Flight Dispatcher','Male','PUNE INTL AIRPORT');
+insert into employee values(41,'Firdous','1989-1-4','Flight Attendant','Female','PUNE INTL AIRPORT');
+insert into employee values(44,'Suman','2000-11-4','Avionics Technician','Male','PUNE INTL AIRPORT');
+insert into employee values(42,'Raj','2001-7-4','Regional Sales Manager','Male','PUNE INTL AIRPORT');
+insert into employee values(45,'Sharon','1977-6-01','Flight Dispatcher','Male','PUNE INTL AIRPORT');
+insert into employee values(46,'Farha','1992-1-09','Flight Attendant','Female','PUNE INTL AIRPORT');
+insert into employee values(47,'Raj','1984-12-12','Avionics Technician','Male','PUNE INTL AIRPORT');
+insert into employee values(48,'Nutan','2002-2-21','Regional Sales Manager','Female','PUNE INTL AIRPORT');
+
+
+create table emp_ph_no(
+EMP_ID int,
+PHONE_NUMBER varchar(13),
+constraint fkepn foreign key(EMP_ID) references employee(EMP_ID) on delete cascade);
+
+insert into emp_ph_no values(1,'9999-999-999');
+insert into emp_ph_no values(2,'9999-999-991');
+insert into emp_ph_no values(3,'9999-999-992');
+insert into emp_ph_no values(4,'9999-999-993');
+insert into emp_ph_no values(5,'9999-999-994');
+insert into emp_ph_no values(6,'9999-999-995');
+insert into emp_ph_no values(7,'9999-999-996');
+insert into emp_ph_no values(8,'9999-999-997');
+insert into emp_ph_no values(9,'9999-999-998');
+
+insert into emp_ph_no values(10,'9999-999-999');
+insert into emp_ph_no values(11,'9999-999-991');
+insert into emp_ph_no values(12,'9999-999-992');
+insert into emp_ph_no values(13,'9999-999-993');
+insert into emp_ph_no values(10,'9999-999-923');
+insert into emp_ph_no values(11,'9999-999-921');
+insert into emp_ph_no values(12,'9999-999-922');
+insert into emp_ph_no values(13,'9999-999-913');
+insert into emp_ph_no values(14,'9999-999-994');
+insert into emp_ph_no values(15,'9999-999-995');
+insert into emp_ph_no values(16,'9999-999-996');
+insert into emp_ph_no values(17,'9999-999-997');
+insert into emp_ph_no values(18,'9999-999-998');
+
+insert into emp_ph_no values(19,'9999-555-999');
+insert into emp_ph_no values(20,'9999-555-991');
+insert into emp_ph_no values(21,'9999-555-992');
+insert into emp_ph_no values(23,'5559-555-993');
+insert into emp_ph_no values(20,'5559-555-923');
+insert into emp_ph_no values(24,'5559-555-994');
+insert into emp_ph_no values(25,'5559-555-995');
+insert into emp_ph_no values(26,'5559-555-996');
+insert into emp_ph_no values(27,'5559-555-997');
+insert into emp_ph_no values(28,'5559-555-998');
+
+
+insert into emp_ph_no values(39,'9999-555-999');
+insert into emp_ph_no values(30,'9999-235-991');
+insert into emp_ph_no values(31,'9999-235-992');
+insert into emp_ph_no values(33,'2359-235-993');
+insert into emp_ph_no values(30,'2359-235-923');
+insert into emp_ph_no values(31,'2222-235-992');
+insert into emp_ph_no values(33,'2222-235-993');
+insert into emp_ph_no values(34,'2222-235-994');
+insert into emp_ph_no values(35,'2359-235-995');
+insert into emp_ph_no values(36,'2359-235-996');
+insert into emp_ph_no values(37,'2359-235-997');
+insert into emp_ph_no values(38,'2359-235-998');
+
+insert into emp_ph_no values(49,'9999-555-999');
+insert into emp_ph_no values(40,'9999-167-991');
+insert into emp_ph_no values(41,'9999-167-992');
+insert into emp_ph_no values(43,'1679-167-993');
+insert into emp_ph_no values(44,'2222-167-994');
+insert into emp_ph_no values(45,'1679-167-995');
+insert into emp_ph_no values(46,'1679-167-996');
+insert into emp_ph_no values(47,'1679-167-997');
+insert into emp_ph_no values(48,'1679-167-998');
+
+
+
+---------float values should be defined by the syntax float(7,4) i.e value,precision-
+
+create table salary_employee(
+DESIGNATION varchar(30),
+SALARY int,
+constraint pkse primary key(DESIGNATION));
+constraint fkse foreign key(DESIGNATION) references employee(DESIGNATION) on delete cascade);
+---------------------------
+
+create index salary_desig on employee(DESIGNATION);
+
+insert into salary_employee select distinct designation,0 from employee;
+
+update salary_employee set salary=200000 where DESIGNATION='Avionics Technician';
+update salary_employee set salary=20000 where DESIGNATION='Regional Sales Manager';
+update salary_employee set salary=35000 where DESIGNATION='Flight Attendant';
+update salary_employee set salary=39000 where DESIGNATION='Flight Dispatcher';
+update salary_employee set salary=80000 where DESIGNATION='Operations Agent';
+-------------------------------
+
+---procedure to display employees
+
+delimiter @@
+create procedure display_employees()
+begin
+select emp_id,name,dob,DATE_FORMAT(FROM_DAYS(DATEDIFF(now(),dob)), '%Y')+0 as 
+AGE,designation,(DATE_FORMAT(FROM_DAYS(DATEDIFF(now(),dob)), '%Y')+0-18)*(select s.salary from 
+salary_employee s where employee.designation=s.designation) as SALARY,GENDER,AIRPORT_NAME
+from employee;
+end;
+@@
+delimiter ;
+-----------------------------------------------------------------
+
+create table flight(
+	FLIGHT_NUM int,
+	SOURCE varchar(15),
+	DESTINATION varchar(15),
+	CONNECTED varchar(4),
+	ARRIVAL varchar(10),
+	DEPARTURE varchar(10),
+	STATUS varchar(8),
+	AIRLINE_ID int,
+	constraint pkf primary key(FLIGHT_NUM),
+	constraint fkf foreign key(AIRLINE_ID) references airline(AIRLINE_ID) on delete cascade);
+
+-----adding foreign cities
+insert into airport values('QATAR INTL AIRPORT','QATAR');
+insert into airport values('CHANGI AIRPORT','SINGAPORE');
+insert into airport values('SUVARNABHUMI INTL AIRPORT','BANGKOK');
+insert into airport values('BERLIN AIRPORT','BERLIN');
+
+insert into state values('QATAR','QATAR');
+insert into state values('SINGAPORE','SINGAPORE');
+insert into state values('BANGKOK','BANGKOK');
+insert into state values('BERLIN','BERLIN');
+
+
+
+----inserting into flight table
+
+insert into flight values(1,'BANGALORE','DELHI','NO','3:15 PM','5:15 PM','OnTime',1,'2 hrs');
+
+insert into flight values(2,'BANGALORE','HYDERABAD','NO','4:15 PM','5:15 PM','OnTime',1,'1 hrs');
+insert into flight values(3,'DELHI','MUMBAI','NO','1:15 PM','5:15 PM','Late',1,'4 hrs');
+insert into flight values(4,'MUMBAI','DELHI','NO','6:00 AM','10:05 PM','OnTime',1,'4 hrs');
+insert into flight values(5,'QATAR','BANGKOK','YES','6:00 AM','^:00 PM','OnTime',2,'12 hrs');
+insert into flight values(6,'BERLIN','QATAR','NO','6:00 AM','10:00 AM','Late',2,'4 hrs');
+insert into flight values(7,'QATAR','SINGAPORE','YES','6:00 AM','10:00 PM','OnTime',5,'14 hrs');
+insert into flight values(8,'SINGAPORE','BERLIN','YES','5:00 AM','7:00 PM','Late',3,'14 hrs');
+insert into flight values(9,'BERLIN','BANGKOK','YES','4:00 AM','4:00 PM','OnTime',4,'12 hrs');
+insert into flight values(10,'BANGKOK','SINGAPORE','NO','8:00 AM','10:00 AM','OnTime',4,'2 hrs');
+insert into flight values(11,'PUNE','BANGALORE','NO','8:00 AM','1:00 PM','OnTime',1,'5 hrs');
+
+
+
+--------------------------PASSENGER TABLE----------
+
+create table passenger(
+PASSPORT_NUM int,
+NAME varchar(20),
+CITY varchar(15),
+GENDER varchar(8),
+DOB date,
+constraint pkp primary key(PASSPORT_NUM));
+
+create table pass_phone_num(
+PASSPORT_NUM int,
+PHONE_NUM varchar(13),
+constraint fkppn foreign key(PASSPORT_NUM) references passenger(PASSPORT_NUM)
+on delete cascade);
+
+create table flight_contain_pass (
+PASSPORT_NUM int,
+FLIGHT_NUM int,
+constraint ffcp foreign key(PASSPORT_NUM) references passenger(PASSPORT_NUM) on delete cascade,
+constraint ffcp1 foreign key(FLIGHT_NUM) references flight(FLIGHT_NUM) on delete cascade,
+constraint pfcp primary key(PASSPORT_NUM,FLIGHT_NUM));
+
+--------inserting passengers
+
+insert into passenger values(1,'Musthaffa','Delhi','Male','2002-11-23');
+insert into passenger values(2,'Afreen','PUNE','Female','2004-01-23');
+insert into passenger values(3,'Abdul','BANGKOK','Male','1992-3-01');
+insert into passenger values(4,'Habib','MUMBAI','Female','1965-11-11');
+insert into passenger values(5,'Nafisa','BERLIN','Female','1975-09-09');
+insert into passenger values(6,'Nasir','HYDERABAD','Male','1999-11-23');
+
+insert into flight_pass_date values(1,1,'2023-05-05');
+insert into flight_pass_date values(2,11,'2023-06-05');
+insert into flight_pass_date values(3,10,'2023-05-06');
+insert into flight_pass_date values(4,4,'2023-05-07');
+insert into flight_pass_date values(5,9,'2023-07-05');
+insert into flight_pass_date values(6,1,'2023-05-05');
+
+insert into flight_pass_date values(1,3,'2023-05-05');
+
+
+insert into pass_phone_num values(1,'765-122-888');
+insert into pass_phone_num values(2,'8976-678-888');
+insert into pass_phone_num values(3,'1234-454-098');
+insert into pass_phone_num values(4,'6789-237-123');
+insert into pass_phone_num values(5,'7743-727-818');
+insert into pass_phone_num values(6,'7451-111-122');
+insert into pass_phone_num values(6,'7412-111-122');
+
+
+
+create table serves(
+EMP_ID int,
+PASSPORT_NUM int,
+constraint fkser1 foreign key(EMP_ID) references employee(EMP_ID),
+constraint fkser2 foreign key(PASSPORT_NUM) references passenger(PASSPORT_NUM));
+
+
+insert into serves values(11,1);
+insert into serves values(12,1);
+insert into serves values(14,1);
+
+insert into serves values(40,2);
+insert into serves values(41,2);
+insert into serves values(42,2);
+insert into serves values(45,2);
+
+insert into serves values(30,3);
+insert into serves values(31,3);
+insert into serves values(34,3);
+
+insert into serves values(38,4);
+insert into serves values(39,4);
+insert into serves values(36,4);
+
+insert into serves values(16,5);
+insert into serves values(17,5);
+insert into serves values(18,5);
+
+insert into serves values(25,6);
+insert into serves values(26,6);
+insert into serves values(24,6);
+
+
+create table ticket
+(TID int,
+SOURCE varchar(15),
+DESTINATION varchar(15),
+DATE_OF_BOOKING date,
+DATE_OF_CANCELLATION date,
+SEATNO int,
+CLASS varchar(15),
+PASSPORT_NUM int,
+constraint pkt primary key(TID),
+constraint fkt foreign key(PASSPORT_NUM) references passenger(PASSPORT_NUM) on delete cascade);
+
+create index bookingindex on ticket(DATE_OF_BOOKING,CLASS);
+
+create table booking(
+DATE_OF_BOOKING date,
+CLASS varchar(15),
+PRICE int,
+constraint fkb foreign key(DATE_OF_BOOKING,CLASS) references ticket(DATE_OF_BOOKING,CLASS),
+constraint pkb primary key(DATE_OF_BOOKING,CLASS));
+
+create index cancellationindex on ticket(DATE_OF_CANCELLATION);
+
+create table cancellation(
+DATE_OF_CANCELLATION date,
+CHARGES int,
+constraint fkca foreign key(DATE_OF_CANCELLATION) references ticket(DATE_OF_CANCELLATION),
+constraint pkb primary key(DATE_OF_CANCELLATION));
+
+
+insert into ticket values(1,'BANGALORE','DELHI','2017-11-12',NULL,1,'BUSINESS',1);
+insert into ticket values(2,'PUNE','BANGALORE','2017-1-12',NULL,1,'ECONOMY',2);
+insert into ticket values(3,'BANGKOK','SINGAPORE','2017-04-02',NULL,1,'BUSINESS',3);
+insert into ticket values(4,'MUMBAI','DELHI','2017-09-12',NULL,1,'FIRST',4);
+insert into ticket values(5,'BERLIN','BANGKOK','2017-10-12',NULL,1,'ECONOMY',5);
+insert into ticket values(6,'BANGALORE','DELHI','2017-11-12',NULL,1,'BUSINESS',6);
+
+
+insert into booking values('2017-11-12','BUSINESS',100000);
+insert into booking values('2017-1-12','ECONOMY',20000);
+insert into booking values('2017-04-02','BUSINESS',100000);
+insert into booking values('2017-09-12','FIRST',50000);
+insert into booking values('2017-10-12','ECONOMY',10000);
+insert into booking values('2017-11-12','BUSINESS',100000);
+
+
+create table ticket(
+TNO int,
+CLASS varchar(15),
+SEAT_NO int,
+PRICE int,
+constraint pkt primary key(TNO));
+
+insert into ticket(1,'BUSINESS',1,200000);
+insert into ticket(2,'ECONOMY',12,20000);
+insert into ticket(3,'BUSINESS',4,200000);
+insert into ticket(4,'FIRST',11,50000);
+insert into ticket(5,'BUSINESS',2,200000);
+insert into ticket(6,'FIRST',30,50000);
+insert into ticket(7,'ECONOMY',44,20000);
+insert into ticket(8,'ECONOMY',56,20000);
+
+
+
+------To print a ticket with a given id
+
+
+delimiter @@
+
+create procedure print_ticket(in t_no int)
+begin
+declare number int;
+set number=t_no;
+select t.TNO,t.CLASS,t1.PRICE,t.SEAT_NO,p.NAME,f.SOURCE,f.DESTINATION,f.ARRIVAL,f.DEPARTURE,f.DURATION,a.AIRLINE_NAME,k.DATE from 
+passenger p,flight f,ticket t,airline a, flight_pass_date k,price t1
+where (p.passport_num,f.flight_num) in (select passport_num,flight_num from flight_pass_date
+				where ticket_id=number) and t.tno=number and f.airline_id=a.airline_id and k.ticket_id=number
+				and t1.class=t.class;
+end;
+
+@@
+
+delimiter ;
+
+-------------------------------------------------book ticket procedure
+
+delimiter @@
+create procedure book_ticket(in tno int ,in pass int ,in fli int ,in d date ,in clss varchar(15),in seat int ,in pri int)
+begin
+insert into ticket values(tno,clss,seat,pri);
+insert into flight_pass_date values(pass,fli,d,tno);
+end;
+@@
+delimiter ;
+
+--------------------------------------------------------creating a new table for ticket price
+create index class_index on ticket(class);
+
+create table price
+(CLASS varchar(15),
+PRICE int,
+constraint fktp foreign key(CLASS) references ticket(CLASS) on delete set null);
+
+--------------------------------------------------------cancel ticket procedure
+
+delimiter @@
+create procedure cancel_ticket(in tno int)
+begin
+delete from ticket where TNO=tno;
+delete from flight_pass_date where ticket_id=tno;
+end;
+@@
+delimiter ;
+
+------------------------------------------procedure to show prices of cancellation
+delimiter @@
+create procedure show_cancellation_prices()
+begin
+select class,DECODE(class,'BUSINESS',20000,
+						 'FIRST',5000,
+						 2000) cost from price;
+end;
+@@
+delimiter ;
